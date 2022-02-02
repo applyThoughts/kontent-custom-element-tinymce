@@ -73,8 +73,10 @@
             "insertdatetime media table paste code help wordcount"
           ],
           toolbar:
-            "undo redo | formatselect | bold italic underline | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | code removeformat | help",
+            "undo redo | formatselect | bold italic underline | alignleft aligncenter alignright alignjustify | image media | bullist numlist outdent indent | code removeformat | help",
           tinycomments_mode: "embedded",
+          images_upload_handler: uploadImageCallback,
+          image_caption: true,
           setup: function(editor) {
             // updates Kentico Cloud element value on certain actions
             editor.on("Paste Change input Undo Redo", function() {
@@ -114,6 +116,27 @@
           initializeEditor(err.toString());
         }
       }
+
+      function uploadImageCallBack(file, success, failure) {
+          var xhr = new XMLHttpRequest();
+          // using webcodatech@gmail.com client id
+          xhr.open('POST', 'https://api.imgur.com/3/image');
+          xhr.setRequestHeader('Authorization', 'Client-ID d3e14b7b5c3f235');
+
+          xhr.addEventListener('load', function() {
+            var json = JSON.parse(xhr.responseText);
+            success(json.data.link);
+          });
+          xhr.addEventListener('error', function() {
+            JSON.parse(xhr.responseText);
+            failure(xhr.responseText);
+          });
+
+          var data = new FormData();
+          var blob = file.blob();
+          data.append('image', blob);
+          xhr.send(data);
+        };
 
       initCustomElement();
     </script>
